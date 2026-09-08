@@ -62,7 +62,7 @@ I ran into a problem with SW1 forming an OSPF neighborship with R1 through its E
 
 ![R1 OSPF neighbor table](images/image8.png)
 
-**SecureCRT remote access to SW1:**
+**SW1 remote access via SecureCRT:**
 
 ![SecureCRT session to SW1](images/image9.png)
 
@@ -71,7 +71,7 @@ SW2 was configured the same as SW1, with its IP address from the topology. I iss
 
 ![Laptop routing table entry for SW2](images/image10.png)
 
-**SecureCRT remote access to SW2:**
+**SW2 remote access via SecureCRT:**
 
 ![SecureCRT session to SW2](images/image11.png)
 
@@ -79,11 +79,11 @@ SW2 was configured the same as SW1, with its IP address from the topology. I iss
 
 To create separate broadcast domains on the two switches, I created VLANs from the topology on both switches, then configured their SVIs so clients could use them as default gateways. For security, the remaining ports were placed into an unused VLAN as access ports, with DTP disabled, and then shut down completely on both switches.
 
-**Security for unused ports on SW1:**
+**Security for unused ports:**
 
 ![Unused port security config](images/image12.png)
 
-Unused switchports are commonly targeted for attacks on networks — even without physical access, unused wall jacks can be exploited. Placing unused ports into an unused VLAN prevents traffic from reaching the rest of the network. Access ports with DTP disabled ensure a trunk can't be formed by an attacker, and shutting the ports down prevents any unauthorized connectivity in a real environment.
+Unused switchports are commonly targeted for attacks on networks, even without physical access, unused wall jacks can be exploited. Placing unused ports into an unused VLAN prevents traffic from reaching the rest of the network. Access ports with DTP disabled ensure a trunk can't be formed by an attacker, and shutting the ports down prevents any unauthorized connectivity in a real environment. All switches in the topology will have the same configuration regarding unused ports. 
 
 **SW1 VLAN table:**
 
@@ -141,7 +141,7 @@ VLANs 10 and 20 are set to a higher priority than the default of 100, with preem
 
 DHCP snooping is configured on switches to prevent rogue DHCP servers from handing out incorrect DHCP information. It builds an IP-to-MAC address table based on DHCP messages passing through the switch. Ports are untrusted by default and only accept DHCP client messages — DHCP server messages are dropped. It's configured on a per-VLAN basis.
 
-**DHCP snooping on SW1:**
+**SW1 DHCP snooping configuration:**
 
 ![DHCP snooping on SW1](images/image21.png)
 
@@ -157,13 +157,13 @@ DHCP is configured on R1 to provide addresses to clients, with DHCP relay agents
 
 Since the VLAN subnets all use `/24`s, the usable address range for each VLAN is `10.10.X.4`–`10.10.X.254`. A smaller subnet could have been used, but a `/24` was used for simplicity.
 
-**DHCP pools on R1:**
+**R1 DHCP pool configuration:**
 
 ![DHCP pools on R1](images/image23.png)
 
 Each VLAN's pool is configured with the default gateway of its corresponding HSRP group.
 
-**DHCP relay configuration:**
+**SW1 DHCP relay configuration:**
 
 ![DHCP relay config](images/image24.png)
 
@@ -177,11 +177,11 @@ SW2 is configured identically to SW1, pointing to R1's loopback IP address.
 
 ![Desktop-1 DHCP lease](images/image26.png)
 
-**DHCP binding table on R1:**
+**R1 DHCP binding table:**
 
 ![DHCP binding table on R1](images/image27.png)
 
-**DHCP snooping table on SW1:**
+**SW1 DHCP snooping table:**
 
 ![DHCP snooping table on SW1](images/image28.png)
 
@@ -203,12 +203,12 @@ SW2 is configured identically. This enables DAI for VLANs 10, 20, and 30 and val
 
 Port security prevents MAC flooding attacks and unauthorized devices from being plugged into the switch. I used restrict mode, which drops and logs violations without err-disabling the port.
 
-**Port security configuration:**
+**SW1 Port security configuration:**
 
 ![Port security config](images/image30.png)
 
 **Issue with port security:**
 
-I initially tried to statically configure specific MAC addresses on E1/1 on SW1 and SW2, but kept getting a "port-security internal error." I switched to sticky MAC addresses instead — after removing the earlier static entries, the sticky MAC addresses were learned into the running configuration and appeared as static entries in the MAC address table.
+I initially tried to statically configure specific MAC addresses on E1/1 on SW1 and SW2, but kept getting a "port-security internal error." I switched to sticky MAC addresses instead. After removing the earlier static entries, the sticky MAC addresses were put into the running configuration and appeared as static entries in the MAC address table.
 
 ![Sticky MAC addresses in MAC table](images/image31.png)
