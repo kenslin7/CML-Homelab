@@ -66,7 +66,6 @@ I ran into a problem with SW1 forming an OSPF neighborship with R1 through its E
 
 ![SecureCRT session to SW1](images/image9.png)
 
-**SW2:**
 
 SW2 was configured the same as SW1, with its IP address from the topology. I issued the `network 0.0.0.0 0.0.0.0 area 0` command to advertise all interfaces into OSPF. SW2 can be reached with Telnet at `203.0.113.2` — this was later changed to the management VLAN on both SW1 and SW2. Like SW1, I had to add a route to my laptop's routing table to reach the `203.0.113.0/24` network via `192.168.1.5`.
 
