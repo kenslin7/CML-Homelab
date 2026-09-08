@@ -107,7 +107,7 @@ The management VLAN SVI on both SW1 and SW2 came up in a down state and couldn't
 
 **Remote management issue:**
 
-I had trouble connecting to SW1 and SW2 remotely via their management SVI addresses. Since both were advertised into OSPF, R1 had an equal-cost path to the `192.168.99.0/24` network and was load-balancing traffic between the links to SW1 and SW2 — sending traffic to the wrong switch. I fixed this by replacing the OSPF routes with static `/32` routes on R1 pointing to the correct interface for each switch.
+I had trouble connecting to SW1 and SW2 remotely via their management SVI addresses. Since both were advertised into OSPF, R1 had an equal-cost path to the `192.168.99.0/24` network and was load-balancing traffic between the links to SW1 and SW2. Resulting in traffic being sent to the wrong switch. I fixed this by replacing the OSPF routes with static `/32` routes on R1 pointing to the correct interface for each switch.
 
 ![Static /32 route fix](images/image16.png)
 
