@@ -67,7 +67,7 @@ I ran into a problem with SW1 forming an OSPF neighborship with R1 through its E
 ![SecureCRT session to SW1](images/image9.png)
 
 
-SW2 was configured the same as SW1, with its IP address from the topology. I issued the `network 0.0.0.0 0.0.0.0 area 0` command to advertise all interfaces into OSPF. SW2 can be reached with Telnet at `203.0.113.2` — this was later changed to the management VLAN on both SW1 and SW2. Like SW1, I had to add a route to my laptop's routing table to reach the `203.0.113.0/24` network via `192.168.1.5`.
+SW2 was configured the same as SW1, with its IP address from the topology. I issued the `network 0.0.0.0 0.0.0.0 area 0` command to advertise all interfaces into OSPF. SW2 can be reached with Telnet at `203.0.113.2`. This will be changed to the management VLAN on both SW1 and SW2 later for remote connectivity. Like SW1, I had to add a route to my laptop's routing table to reach the `203.0.113.0/24` network via `192.168.1.5`.
 
 ![Laptop routing table entry for SW2](images/image10.png)
 
@@ -139,17 +139,17 @@ VLANs 10 and 20 are set to a higher priority than the default of 100, with preem
 
 ## DHCP Snooping Configuration
 
-DHCP snooping is configured on switches to prevent rogue DHCP servers from handing out incorrect DHCP information. It builds an IP-to-MAC address table based on DHCP messages passing through the switch. Ports are untrusted by default and only accept DHCP client messages — DHCP server messages are dropped. It's configured on a per-VLAN basis.
+DHCP snooping is configured on switches to prevent rogue DHCP servers from handing out incorrect DHCP information. It builds an IP-to-MAC address table based on DHCP messages passing through the switch. Ports are untrusted by default and only accept DHCP client messages. Any DHCP server messages are dropped. DHCP snooping is configured on a per-VLAN basis.
 
 **SW1 DHCP snooping configuration:**
 
 ![DHCP snooping on SW1](images/image21.png)
 
-SW2 is configured identically to SW1. Only two commands are needed here — the DHCP server lives on R1, which connects to SW1 and SW2 via routed ports that can't be configured as trusted. No ports within VLANs 10, 20, or 30 should be sending DHCP server messages. I configured the port-channel between SW1 and SW2 as trusted for DHCP snooping in case the link between R1 and SW2 goes down.
+SW2 is configured identically to SW1. Only two commands were needed here since the DHCP server is configured on R1, which connects to SW1 and SW2 via routed ports that can't be configured as trusted. No ports within VLANs 10, 20, or 30 should be sending DHCP server messages. I configured the port-channel between SW1 and SW2 as trusted for DHCP snooping in case the link between R1 and SW2 goes down.
 
 ### DHCP Pool Configuration
 
-DHCP is configured on R1 to provide addresses to clients, with DHCP relay agents configured on the VLAN 10, 20, and 30 SVIs pointing to R1. I also excluded IP addresses already in use. Since DHCP snooping is configured, leases populate the DHCP snooping binding table, which is also used later for Dynamic ARP Inspection.
+DHCP is configured on R1 to provide addresses to clients, with DHCP relay agents configured on the VLAN 10, 20, and 30 SVIs pointing to R1. I also excluded IP addresses already in use. Since DHCP snooping is configured, DHCP leases will populate the DHCP snooping binding table, which is also used later for Dynamic ARP Inspection.
 
 **Excluded DHCP addresses:**
 
@@ -187,7 +187,7 @@ SW2 is configured identically to SW1, pointing to R1's loopback IP address.
 
 **Issue with DHCP:**
 
-When starting the lab, clients were unable to obtain IP addresses from R1's DHCP pools, producing an "Unknown Output Interface" error in the DHCP snooping statistics and debug output. Investigating further, I found that client MAC addresses were expiring out of the switches' MAC address tables, which meant DHCP offers couldn't be relayed back since the switch no longer knew the client's associated port. Even though leased IPs showed up in R1's DHCP binding table, they stayed in the "Selecting" state and were never fully assigned. To work around this for the lab — since clients weren't sending regular traffic — I statically added the client MAC addresses to the MAC address table so they wouldn't expire.
+When starting the lab, clients were unable to obtain IP addresses from R1's DHCP pools, producing an "Unknown Output Interface" error in the DHCP snooping statistics and debug output. Investigating further, I found that client MAC addresses were expiring out of the switches' MAC address tables, which meant DHCP offers couldn't be relayed back since the switch no longer knew the client's associated port. Even though leased IPs showed up in R1's DHCP binding table, they stayed in the "Selecting" state and were never fully assigned. To work around this for the lab, since clients weren't sending regular traffic, I statically added the client MAC addresses to the MAC address table so they wouldn't expire.
 
 ## Dynamic ARP Inspection Configuration
 
