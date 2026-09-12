@@ -32,7 +32,7 @@ I created a local account on R1 since I was issuing the `login local` command fo
 
 **SecureCRT remote access to R1:**
 
-![SecureCRT session to R1](images/image3.png)
+![SecureCRT session to R1](images/image32.png)
 
 The rest of R1's interfaces have been configured with the addresses from the topology.
 
